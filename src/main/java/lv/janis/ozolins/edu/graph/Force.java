@@ -1,3 +1,5 @@
+package lv.janis.ozolins.edu.graph;
+
 import java.util.Random;
 
 

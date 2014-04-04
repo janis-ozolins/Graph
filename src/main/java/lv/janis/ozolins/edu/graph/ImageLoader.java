@@ -1,3 +1,5 @@
+package lv.janis.ozolins.edu.graph;
+
 import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;

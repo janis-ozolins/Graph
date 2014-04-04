@@ -1,4 +1,6 @@
-import DeepCopy.DeepCopy;
+package lv.janis.ozolins.edu.graph;
+
+import lv.janis.ozolins.edu.graph.deepcopy.DeepCopy;
 
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
@@ -90,7 +92,7 @@ public class GraphicGraph extends JFrame implements ActionListener{
 		paused = false;
 		this.graph = graph;
 		imLoader = new ImageLoader();
-		copy = (Graph)DeepCopy.copy(graph);
+		copy = (Graph) DeepCopy.copy(graph);
 		
 		panel = new Container(graph);
 		panel.setBackground(Color.white);

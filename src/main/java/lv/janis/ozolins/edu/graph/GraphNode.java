@@ -1,3 +1,5 @@
+package lv.janis.ozolins.edu.graph;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -1,12 +1,10 @@
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
+package lv.janis.ozolins.edu.graph;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 
 
 public class Container extends JPanel{
