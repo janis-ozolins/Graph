@@ -1,4 +1,12 @@
-import java.awt.Color;
+import DeepCopy.DeepCopy;
+
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -8,35 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSlider;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import DeepCopy.DeepCopy;
-
 public class GraphicGraph extends JFrame implements ActionListener{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6442215644076575190L;
 	Container panel;
 	JButton btnSkt;
 	Graph graph,copy;
@@ -55,17 +35,11 @@ public class GraphicGraph extends JFrame implements ActionListener{
 		try {
 			// Set System L&F
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (UnsupportedLookAndFeelException e) {
-			// handle exception
-		} catch (ClassNotFoundException e) {
-			// handle exception
-		} catch (InstantiationException e) {
-			// handle exception
-		} catch (IllegalAccessException e) {
-			// handle exception
-		}
+		} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            System.out.println("Error while inicializing Swing");
+        }
 
-		SwingUtilities.invokeLater(new Runnable(){
+        SwingUtilities.invokeLater(new Runnable(){
 			@Override
 			public void run(){
 				List<GraphNode> list = new ArrayList<GraphNode>();
@@ -131,10 +105,10 @@ public class GraphicGraph extends JFrame implements ActionListener{
 		dampingSlider.addChangeListener(sliderListener);
 		dampingSlider.setToolTipText("Damping (Inderce)");
 		
-		JLabel coulombLabel = new JLabel("Atgrûðanâs spçks");
+		JLabel coulombLabel = new JLabel("Atgrï¿½ï¿½anï¿½s spï¿½ks");
 		coulombSlider = new JSlider(JSlider.HORIZONTAL,10,10000,1000);
 		coulombSlider.addChangeListener(sliderListener);
-		coulombSlider.setToolTipText("Atgrûðanâs spçka konstance");
+		coulombSlider.setToolTipText("Atgrï¿½ï¿½anï¿½s spï¿½ka konstance");
 		
 		JPanel controlPanel = new JPanel();
 		controlPanel.setBorder(new TitledBorder("Kontrole"));
@@ -164,7 +138,7 @@ public class GraphicGraph extends JFrame implements ActionListener{
 			}
 		});
 		
-		btnStop = new JButton("Apstâdinât/Atsâkt");
+		btnStop = new JButton("Apstï¿½dinï¿½t/Atsï¿½kt");
 		btnStop.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {

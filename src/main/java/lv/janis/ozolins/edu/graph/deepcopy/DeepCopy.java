@@ -1,4 +1,4 @@
-package DeepCopy;
+package lv.janis.ozolins.edu.graph.deepcopy;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -1,7 +1,6 @@
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.ImageIcon;
 
 
 public class ImageLoader {
@@ -25,11 +24,8 @@ public class ImageLoader {
 	}
 	
 	private boolean isImage(ImageIcon icon){
-		if(icon.getIconWidth() == -1 || icon.getIconHeight() == -1){
-			return false;
-		}
-		return true;
-	}
+        return !(icon.getIconWidth() == -1 || icon.getIconHeight() == -1);
+    }
 
 	public static ImageIcon getDefaultIcon() {
 		return defaultIcon;
