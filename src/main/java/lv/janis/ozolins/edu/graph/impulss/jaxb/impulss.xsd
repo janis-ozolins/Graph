@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="workflow" type="workflowType"/>
+  <xs:complexType name="restrict-toType">
+    <xs:sequence>
+      <xs:element type="conditionsType" name="conditions"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="unconditional-resultType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="id" use="optional"/>
+        <xs:attribute type="xs:string" name="old-status" use="optional"/>
+        <xs:attribute type="xs:string" name="status" use="optional"/>
+        <xs:attribute type="xs:string" name="step" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="argType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="actionsType">
+    <xs:sequence>
+      <xs:element type="actionType" name="action" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="trigger-functionsType">
+    <xs:sequence>
+      <xs:element type="trigger-functionType" name="trigger-function" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="conditionType">
+    <xs:sequence>
+      <xs:element type="argType" name="arg" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="type" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="actionType">
+    <xs:sequence>
+      <xs:element type="restrict-toType" name="restrict-to" minOccurs="0"/>
+      <xs:element type="pre-functionsType" name="pre-functions" minOccurs="0"/>
+      <xs:element type="resultsType" name="results"/>
+      <xs:element type="post-functionsType" name="post-functions" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="id" use="optional"/>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+    <xs:attribute type="xs:string" name="view" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="stepsType">
+    <xs:sequence>
+      <xs:element type="stepType" name="step" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="functionType">
+    <xs:sequence>
+      <xs:element type="argType" name="arg" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="type" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="initial-actionsType">
+    <xs:sequence>
+      <xs:element type="actionType" name="action"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="trigger-functionType">
+    <xs:sequence>
+      <xs:element type="functionType" name="function"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="id" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="workflowType">
+    <xs:sequence>
+      <xs:element type="trigger-functionsType" name="trigger-functions"/>
+      <xs:element type="initial-actionsType" name="initial-actions"/>
+      <xs:element type="stepsType" name="steps"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="stepType">
+    <xs:sequence>
+      <xs:element type="actionsType" name="actions"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="id" use="optional"/>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="resultsType">
+    <xs:sequence>
+      <xs:element type="unconditional-resultType" name="unconditional-result"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="post-functionsType">
+    <xs:sequence>
+      <xs:element type="functionType" name="function" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="conditionsType">
+    <xs:sequence>
+      <xs:element type="conditionType" name="condition" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="type" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="pre-functionsType">
+    <xs:sequence>
+      <xs:element type="functionType" name="function"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

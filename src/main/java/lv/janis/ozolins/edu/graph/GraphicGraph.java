@@ -1,6 +1,8 @@
 package lv.janis.ozolins.edu.graph;
 
 import lv.janis.ozolins.edu.graph.deepcopy.DeepCopy;
+import lv.janis.ozolins.edu.graph.impulss.ImpulssXmlParser;
+import lv.janis.ozolins.edu.graph.msg.Messages;
 
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
@@ -28,8 +30,9 @@ public class GraphicGraph extends JFrame implements ActionListener{
 	JPopupMenu popupMenu;
 	JSlider dampingSlider,coulombSlider;
 	JMenuBar menuBar;
-	JMenuItem menuExit,menuRestart, menuUpload;
+	JMenuItem menuExit,menuRestart, menuUpload, xmlUpload;
 	ImageLoader imLoader;
+    ImpulssXmlParser xmlParser;
 	
 	
 	public static void main(String[] args) {
@@ -92,7 +95,9 @@ public class GraphicGraph extends JFrame implements ActionListener{
 		paused = false;
 		this.graph = graph;
 		imLoader = new ImageLoader();
+
 		copy = (Graph) DeepCopy.copy(graph);
+        xmlParser = new ImpulssXmlParser();
 		
 		panel = new Container(graph);
 		panel.setBackground(Color.white);
@@ -102,18 +107,18 @@ public class GraphicGraph extends JFrame implements ActionListener{
 		
 		SliderListener sliderListener = new SliderListener();
 		
-		JLabel dampingLabel = new JLabel("Inerce");
+		JLabel dampingLabel = new JLabel(Messages.msg("label.inertia"));
 		dampingSlider = new JSlider(JSlider.HORIZONTAL,0,100,80);
 		dampingSlider.addChangeListener(sliderListener);
-		dampingSlider.setToolTipText("Damping (Inderce)");
+		dampingSlider.setToolTipText(Messages.msg("label.damping"));
 		
-		JLabel coulombLabel = new JLabel("Atgr��an�s sp�ks");
+		JLabel coulombLabel = new JLabel(Messages.msg("label.repulsionForse"));
 		coulombSlider = new JSlider(JSlider.HORIZONTAL,10,10000,1000);
 		coulombSlider.addChangeListener(sliderListener);
-		coulombSlider.setToolTipText("Atgr��an�s sp�ka konstance");
+		coulombSlider.setToolTipText(Messages.msg("label.repulstionConstant"));
 		
 		JPanel controlPanel = new JPanel();
-		controlPanel.setBorder(new TitledBorder("Kontrole"));
+		controlPanel.setBorder(new TitledBorder(Messages.msg("label.control")));
 		GroupLayout controlsLayout = new GroupLayout(controlPanel);
 		controlsLayout.setHorizontalGroup(
 				controlsLayout.createParallelGroup(Alignment.CENTER)
@@ -140,7 +145,7 @@ public class GraphicGraph extends JFrame implements ActionListener{
 			}
 		});
 		
-		btnStop = new JButton("Apst�din�t/Ats�kt");
+		btnStop = new JButton(Messages.msg("label.startStop"));
 		btnStop.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
@@ -203,23 +208,8 @@ public class GraphicGraph extends JFrame implements ActionListener{
 					.addContainerGap())
 		);
 		getContentPane().setLayout(groupLayout);
-		
-		menuBar = new JMenuBar();
-		JMenu menu = new JMenu("File");
-		menuBar.add(menu);
-		
-		menuRestart = new JMenuItem("No sakuma");
-		menuRestart.addActionListener(this);
-		menu.add(menuRestart);
-		
-		menuUpload = new JMenuItem("Nomainit bilditi");
-		menuUpload.addActionListener(this);
-		menu.add(menuUpload);
-		
-		menuExit = new JMenuItem("Exit");
-		menuExit.addActionListener(this);
-		menu.add(menuExit);
-		
+
+        addMenuBar();
 		
 		setJMenuBar(menuBar);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -231,8 +221,33 @@ public class GraphicGraph extends JFrame implements ActionListener{
 		
 		initNodes();
 	}
-	
-	public void initNodes(){
+
+    private void addMenuBar() {
+        menuBar = new JMenuBar();
+        JMenu menu = new JMenu("File");
+        menuBar.add(menu);
+
+        menuRestart = new JMenuItem("No sakuma");
+        menuRestart.addActionListener(this);
+        menu.add(menuRestart);
+
+        menuUpload = new JMenuItem("Nomainit bilditi");
+        menuUpload.addActionListener(this);
+        menu.add(menuUpload);
+
+        menuExit = new JMenuItem("Exit");
+        menuExit.addActionListener(this);
+        menu.add(menuExit);
+
+        JMenu loadImpulssMenu = new JMenu(Messages.msg("manu.impulss"));
+        menuBar.add(loadImpulssMenu);
+
+        xmlUpload = new JMenuItem(Messages.msg("menu.impulss.xmlUpload"));
+        xmlUpload.addActionListener(this);
+        loadImpulssMenu.add(xmlUpload);
+    }
+
+    public void initNodes(){
 		int maxX = panel.getWidth() - 1;
 		int maxY = panel.getHeight() - 1;
 		graph.setDimensions(maxX, maxY);
@@ -400,7 +415,20 @@ public class GraphicGraph extends JFrame implements ActionListener{
 				panel.setIcon(icon);
 			}
 			startGraphComputations();
-		}
+		}else if(e.getSource() == xmlUpload){
+            if (computation != null && !computation.isDone()) {
+                computation.cancel(true);
+            }
+            JFileChooser fileChooser = new JFileChooser();
+            int returnVal = fileChooser.showOpenDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                panel.setGraph(xmlParser.createGraph(file));
+                initNodes();
+                panel.repaint();
+            }
+            startGraphComputations();
+        }
 		
 	}
 }

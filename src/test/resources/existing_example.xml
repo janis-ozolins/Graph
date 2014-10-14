@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<workflow>
+  <meta name="created">Wed Sep 08 12:15:16 EEST 2004</meta>
+  <meta name="lastModified">Wed Sep 08 14:47:49 EEST 2004</meta>
+  <meta name="generator">OSWOrkflow Designer</meta>
+  <trigger-functions>
+        <trigger-function id="100003">
+			<function type="class">
+				<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+			</function>
+		</trigger-function>
+	</trigger-functions>
+  <initial-actions>
+    <action id="0" name="Start Workflow">
+		<results>
+        <unconditional-result id="2" old-status="Finished" status="Queued" step="1"/>
+      </results>
+      <post-functions>
+                <function type="beanshell">
+              <arg name="script">
+                  String caller = context.getCaller();
+                  propertySet.setString("caller", caller);
+                  String documentId = transientVars.get("documentId").toString();
+                  propertySet.setString("documentId", documentId);
+				  String documentVersion = transientVars.get("documentVersion").toString();
+				  propertySet.setString("documentVersion", documentVersion);
+              </arg>
+         </function>
+		 <function type="class">
+			<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+			<arg name="doc_type_transl">CURRENT_DOC</arg>
+			<arg name="status">registered_project</arg>
+			<arg name="registration_date">CURRENT_DATE</arg>
+			<arg name="document_work_over">field:executive</arg>
+			<arg name="actual_date">CURRENT_DATE</arg>
+			<arg name="doc_editor">reference:journal#journal_editor</arg>
+			<arg name="secretary">reference:journal#journal_secretary</arg>
+			<arg name="doc_created_by">CURRENT_USER</arg>
+		 </function>
+		 <function type="class">
+			<arg name="class.name">lv.alise.impulss.workflow.functions.IncrementVersion</arg>
+				<arg name="version.field">document_version</arg>
+			<arg name="new.version.number">1.0</arg>
+		 </function>
+		 <function type="class">
+			<arg name="class.name">lv.alise.impulss.workflow.functions.UpdateResolutionIndex</arg>
+			<arg name="identifier.field">identifier</arg>
+			<arg name="parent_document_id.field">parent_document_id</arg>
+		 </function>
+      </post-functions>
+    </action>
+  </initial-actions>
+  <steps>
+    <step id="1" name="registered_project">
+		<actions>
+			<action id="281" name="pass_on_archive" view="workflow.protocol.pass_on_archive">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="29" old-status="Finished" status="Queued" step="7"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">archived</arg>
+						</function>
+					</post-functions>
+				</action>
+			<action id="1501" name="auto_revoke" view="auto_revoke">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="15011" old-status="Finished" status="Queued" step="11011"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">revoked</arg>
+							<arg name="document_work_over">BLANK</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+						</function>
+					</post-functions>
+				</action>
+         		<action id="11" name="register" view="workflow.appendix.register">
+					<restrict-to>
+             			<conditions type="AND">
+			   				 <condition type="beanshell">
+	    		 			   <arg name="script">true</arg> 
+			    			</condition>
+             			</conditions>
+					</restrict-to>
+		            <results>
+        		       <unconditional-result id="111" old-status="Finished" status="Queued" step="2"/>
+		            </results>
+        		    <post-functions>
+            			<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">registered</arg>
+							<arg name="sign_date">CURRENT_DATE</arg>
+							<arg name="document_work_over">field:executive</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.SendMessage</arg>
+							<arg name="worker.field">author</arg>
+							<arg name="subject">message.new_document</arg>
+							<arg name="message">message.new_document</arg>
+							<arg name="checkIfCreatorIsAuthor">true</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.SendJournalMessage</arg>
+							<arg name="subject">message.sign</arg>
+							<arg name="message">message.sign</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+						</function>
+        		   	</post-functions>
+	          </action>
+				<action id="12" name="documents.delete" view="documents.delete">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+							<condition type="class">
+								<arg name="class.name">lv.alise.impulss.workflow.conditions.CheckWorkflowButtonRights</arg>
+								<arg name="author_editor_creator">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="121" old-status="Finished" status="Queued" step="1"/>
+					</results>
+				</action>
+				<action id="131" name="document.copy" view="workflow.document.copy">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+							<condition type="class">
+								<arg name="class.name">lv.alise.impulss.workflow.conditions.CheckDocumentCopyPermission</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="1311" old-status="Finished" status="Queued" step="1"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.RemoveDuplicateState</arg>
+							<arg name="step_id">1</arg>
+							<arg name="action_id">131</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.ProcessFindForward</arg>
+							<arg name="forward.action">document.copy</arg>
+							<arg name="forward.path">/document.copy</arg>
+						</function>
+					</post-functions>
+				</action>
+      </actions>
+	</step>
+	<step id="2" name="registered">
+		<actions>
+         <action id="282" name="pass_on_archive" view="workflow.protocol.pass_on_archive">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="29" old-status="Finished" status="Queued" step="7"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">archived</arg>
+							<arg name="document_work_over">field:executive</arg>
+						</function>
+					</post-functions>
+				</action>
+         <action id="1502" name="auto_revoke" view="auto_revoke">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="15021" old-status="Finished" status="Queued" step="11011"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">revoked</arg>
+							<arg name="document_work_over">BLANK</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+						</function>
+					</post-functions>
+				</action>
+         		<action id="2042" name="in_editing_from_registered" view="workflow.in_editing_from_registered">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+							<condition type="class">
+								<arg name="class.name">lv.alise.impulss.workflow.conditions.CheckWorkflowButtonRights</arg>
+								<arg name="author_editor_creator">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="20421" old-status="Finished" status="Queued" step="2911"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">in_editing_from_registered</arg>
+							<arg name="document_work_over">CURRENT_USER</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+						</function>
+					</post-functions>
+		  </action>
+		  <action id="2043" name="revoke" view="workflow.revoke">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+							<condition type="class">
+								<arg name="class.name">lv.alise.impulss.workflow.conditions.CheckWorkflowButtonRights</arg>
+								<arg name="author_editor_creator">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="20431" old-status="Finished" status="Queued" step="11011"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">revoked</arg>
+							<arg name="document_work_over">BLANK</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+						</function>
+					</post-functions>
+				</action>
+				<action id="231" name="document.copy" view="workflow.document.copy">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+							<condition type="class">
+								<arg name="class.name">lv.alise.impulss.workflow.conditions.CheckDocumentCopyPermission</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="1311" old-status="Finished" status="Queued" step="2"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.RemoveDuplicateState</arg>
+							<arg name="step_id">2</arg>
+							<arg name="action_id">231</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.ProcessFindForward</arg>
+							<arg name="forward.action">document.copy</arg>
+							<arg name="forward.path">/document.copy</arg>
+						</function>
+					</post-functions>
+				</action>
+      </actions>
+	</step>
+	<step id="2911" name="in_editing_from_registered">
+		<actions>
+			<action id="283" name="pass_on_archive" view="workflow.protocol.pass_on_archive">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="29" old-status="Finished" status="Queued" step="7"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">archived</arg>
+						</function>
+					</post-functions>
+				</action>
+			<action id="1503" name="auto_revoke" view="auto_revoke">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="15031" old-status="Finished" status="Queued" step="11011"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">revoked</arg>
+							<arg name="document_work_over">BLANK</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+						</function>
+					</post-functions>
+				</action>
+        		<action id="29111" name="step_back_registered" view="workflow.step_back_registered">
+				<restrict-to>
+   			    	<conditions type="AND">
+						<condition type="beanshell">
+	        				<arg name="script">true</arg> 
+					    </condition>
+					    <condition type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.conditions.CheckWorkflowButtonRights</arg>
+							<arg name="author_editor_creator">true</arg>
+						</condition>
+       			    </conditions>
+				</restrict-to>
+       	   		<results>
+       	   			<unconditional-result id="291111" old-status="Finished" status="Queued" step="2"/>
+	       		</results>
+	       		<post-functions>
+					<function type="class">
+						<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+						<arg name="status">registered</arg>
+						<arg name="document_work_over">field:author</arg>
+					</function>
+					<function type="class">
+						<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+					</function>
+				</post-functions>
+        	</action>
+      	</actions>
+	</step>
+	<step id="11011" name="revoked">
+			<actions>
+         		<action id="284" name="pass_on_archive" view="workflow.protocol.pass_on_archive">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="29" old-status="Finished" status="Queued" step="7"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">archived</arg>
+						</function>
+					</post-functions>
+				</action>
+         		<action id="110111" name="in_editing_from_revoked" view="workflow.in_editing_from_revoked">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+							<condition type="class">
+								<arg name="class.name">lv.alise.impulss.workflow.conditions.CheckWorkflowButtonRights</arg>
+								<arg name="author_editor_creator">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="1101111" old-status="Finished" status="Queued" step="11011911"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">in_editing_from_revoked</arg>
+							<arg name="document_work_over">CURRENT_USER</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+						</function>
+					</post-functions>
+				</action>
+	      	</actions>
+		</step>
+		<step id="11011911" name="in_editing_from_revoked">
+			<actions>
+				<action id="286" name="pass_on_archive" view="workflow.protocol.pass_on_archive">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="29" old-status="Finished" status="Queued" step="7"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">archived</arg>
+						</function>
+					</post-functions>
+				</action>
+				<action id="1505" name="auto_revoke" view="auto_revoke">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="15051" old-status="Finished" status="Queued" step="4"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">canceled</arg>
+							<arg name="document_work_over">field:author</arg>
+							<arg name="execution_time">CURRENT_DATE</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+						</function>
+					</post-functions>
+				</action>
+         		<action id="110119111" name="step_back_revoked" view="workflow.step_back_revoked">
+					<restrict-to>
+						<conditions type="AND">
+							<condition type="beanshell">
+								<arg name="script">true</arg>
+							</condition>
+							<condition type="class">
+								<arg name="class.name">lv.alise.impulss.workflow.conditions.CheckWorkflowButtonRights</arg>
+								<arg name="author_editor_creator">true</arg>
+							</condition>
+						</conditions>
+					</restrict-to>
+					<results>
+						<unconditional-result id="1101191111" old-status="Finished" status="Queued" step="11011"/>
+					</results>
+					<post-functions>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.FieldRecorder</arg>
+							<arg name="status">revoked</arg>
+							<arg name="document_work_over">BLANK</arg>
+						</function>
+						<function type="class">
+							<arg name="class.name">lv.alise.impulss.workflow.functions.lvm.UpdateGrifDocuments</arg>
+						</function>
+					</post-functions>
+				</action>
+	      	</actions>
+		</step>
+		<step id="7" name="archived">
+			<actions>
+         			<action id="7102" name="empty_step_button" view="empty_step_button">
+					<restrict-to>
+    			       		 <conditions type="AND">
+						    <condition type="beanshell">
+		        				<arg name="script">false</arg> 
+						    </condition>
+        			    		</conditions>
+					</restrict-to>
+        		    		<results>
+        	        			<unconditional-result id="71021" old-status="Finished" status="Queued" step="7"/>
+		            		</results>
+	         		</action>
+	      		</actions>
+		</step>
+  </steps>
+</workflow>
