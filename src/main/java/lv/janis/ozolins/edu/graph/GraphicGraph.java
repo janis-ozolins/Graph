@@ -33,7 +33,7 @@ public class GraphicGraph extends JFrame implements ActionListener{
 	JMenuItem menuExit,menuRestart, menuUpload, xmlUpload;
 	ImageLoader imLoader;
     ImpulssXmlParser xmlParser;
-	
+
 	
 	public static void main(String[] args) {
 		// Windows Look & Feel
@@ -423,11 +423,18 @@ public class GraphicGraph extends JFrame implements ActionListener{
             int returnVal = fileChooser.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-                panel.setGraph(xmlParser.createGraph(file));
+                Graph xmlGraph = xmlParser.createGraph(file);
+                this.graph = xmlGraph;
+                panel.setGraph(xmlGraph);
                 initNodes();
                 panel.repaint();
+
+                paused = false;
+                toogleSaktButtonOn();
+                if (computation != null && !computation.isDone()){
+                    computation.cancel(true);
+                }
             }
-            startGraphComputations();
         }
 		
 	}

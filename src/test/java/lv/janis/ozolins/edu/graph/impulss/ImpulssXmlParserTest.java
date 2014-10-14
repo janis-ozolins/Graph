@@ -1,5 +1,6 @@
 package lv.janis.ozolins.edu.graph.impulss;
 
+import lv.janis.ozolins.edu.graph.Graph;
 import org.junit.Test;
 
 import java.io.File;
@@ -13,6 +14,7 @@ public class ImpulssXmlParserTest {
     public void testCreateGraph() throws Exception {
         ImpulssXmlParser xmlParser = new ImpulssXmlParser();
         URL xml = ClassLoader.getSystemResource("existing_example.xml");
-        xmlParser.createGraph(new File(xml.toURI()));
+        Graph graph = xmlParser.createGraph(new File(xml.toURI()));
+        System.out.println(graph);
     }
 }
